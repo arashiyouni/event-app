@@ -27,3 +27,13 @@ npm run dev
 ```sh
 npm run build
 ```
+
+
+Referencia:
+https://github.com/martinpeck/pokemon-vue-er/blob/master/src/components/Pokemon.vue
+
+https://imaginaformacion.com/tutoriales/como-usar-axios-en-vue-3
+
+https://github.com/vjrsz/pokedex-vuejs/blob/master/src/store/index.js
+
+https://github.com/danielmeloalencar/vue-js-pokemon-api/blob/master/src/services/pokemonApi.js
