@@ -15,14 +15,14 @@
                     <th class="px-4 py-4">Acciones</th>
                 </tr>
             </thead>
-            <tbody class="max-w-xs">
+            <tbody>
                 <tr v-if="events.length === 0">
                     <td :colspan="columns.length + 1" class="px-4 py-3 text-center">
                         😃 ¡No hay eventos registrados!
                     </td>
                 </tr>
-                <tr v-for="event in events" :key="event.id" class="border-b">
-                    <td v-for="column in columns" :key="column.key" class="px-4 py-3 ">
+                <tr v-for="event in events" :key="event.event_id" class="border-b">
+                    <td v-for="column in columns" :key="column.key" class="px-4 py-3">
                         {{ event[column.key] }}
                     </td>
                     <td class="flex items-center px-4 py-3">
@@ -30,7 +30,7 @@
                             class="mr-2 bg-blue-700 px-4 py-2 text-sm text-white rounded-lg hover:bg-blue-800">
                             Editar
                         </button>
-                        <button @click="deleteEvent(event.id)"
+                        <button @click="deleteEvent(event.event_id)"
                             class="bg-red-700 px-4 py-2 text-sm text-white rounded-lg hover:bg-red-800">
                             Eliminar
                         </button>
@@ -39,28 +39,7 @@
             </tbody>
         </table>
 
-        <!-- Paginación -->
-        <div class="flex justify-center mt-4">
-            <button @click="changePage(page - 1)" :disabled="page === 1"
-                class="px-4 py-2 mx-1 bg-gray-300 rounded hover:bg-gray-400">
-                Anterior
-            </button>
-            <!--TODO: MEJORAR EL TOTALPAGE-->
-            <button v-for="pageNumber in totalPages" :key="pageNumber" @click="changePage(pageNumber)" :class="[
-                'px-4 py-2 mx-1 rounded',
-                pageNumber === page ? 'bg-blue-500 text-white' : 'bg-gray-300 hover:bg-gray-400'
-            ]">
-                {{ pageNumber }}
-            </button>
-            <button @click="changePage(page + 1)" :disabled="page === totalPages"
-                class="px-4 py-2 mx-1 bg-gray-300 rounded hover:bg-gray-400">
-                Siguiente
-            </button>
-        </div>
-
-        <!--Modal-->
-        <!--TODO: VERIFICAR EL MODAL CON LOS CAMPOS REQUERIDOS -->
-        <Modal :modalActive="modalActive" @close-modal="closeModal">
+        <Modal :modalActive="modalActive" @close-modal="closeModal" @submit="saveEvent">
             <template v-slot>
                 <form @submit.prevent="saveEvent">
                     <div class="mb-4">
@@ -72,9 +51,21 @@
                         <textarea v-model="currentEvent.description" class="w-full border p-2 rounded"
                             required></textarea>
                     </div>
-                    <button type="submit" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
-                        Guardar
-                    </button>
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium">Día del evento</label>
+                        <input v-model="currentEvent.date_event" type="date" class="w-full border p-2 rounded"
+                            required />
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium">Ubicación</label>
+                        <input v-model="currentEvent.location" type="text" class="w-full border p-2 rounded" required />
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium">Organizador/a</label>
+                        <input v-model="currentEvent.organizer" type="text" class="w-full border p-2 rounded"
+                            required />
+                    </div>
+                    <InputDropdown v-model="currentEvent.category_id" />
                 </form>
             </template>
         </Modal>
@@ -84,17 +75,22 @@
 <script>
 import { mapState, mapActions } from 'vuex';
 import Modal from '@/components/Modal.vue';
+import InputDropdown from '@/components/InputDropdown.vue';
 
 export default {
     name: 'EventsView',
-    components: { Modal },
+    components: { Modal, InputDropdown },
     data() {
         return {
             modalActive: false,
             currentEvent: {
-                id: null,
+                event_id: null,
                 name: '',
                 description: '',
+                date_event: '',
+                location: '',
+                organizer: '',
+                category_id: ''
             },
             columns: [
                 { key: 'name', label: 'Nombre' },
@@ -103,7 +99,7 @@ export default {
                 { key: 'location', label: 'Ubicación' },
                 { key: 'organizer', label: 'Organizador/a' }
             ],
-            itemsPerPage: 6,
+            bodyUpdate: {}
         };
     },
     computed: {
@@ -115,23 +111,42 @@ export default {
         ...mapActions(['GET_ALL_EVENTS', 'CREATE_EVENT', 'UPDATE_EVENT', 'DELETE_EVENT']),
 
         openModal(event) {
-            this.currentEvent = event ? { ...event } : { id: null, name: '', description: '' };
+            this.currentEvent = event
+                ? { ...event }
+                : {
+                    event_id: null,
+                    name: '',
+                    description: '',
+                    date_event: '',
+                    location: '',
+                    organizer: '',
+                    category_id: ''
+                };
             this.modalActive = true;
         },
         closeModal() {
             this.modalActive = false;
         },
         async saveEvent() {
+            const eventData = {
+                name: this.currentEvent.name,
+                description: this.currentEvent.description,
+                date_event: this.currentEvent.date_event,
+                location: this.currentEvent.location,
+                organizer: this.currentEvent.organizer,
+                category_id: this.currentEvent.category_id,
+            };
             try {
-                if (this.currentEvent.id) {
-                    await this.UPDATE_EVENT(this.currentEvent);
+                if (this.currentEvent.event_id) {
+                    await this.UPDATE_EVENT({ event_id: this.currentEvent.event_id, ...eventData });
                 } else {
-                    await this.CREATE_EVENT(this.currentEvent);
+                    // Crear evento si no tiene event_id
+                    await this.CREATE_EVENT({...eventData});
                 }
                 this.closeModal();
                 this.GET_ALL_EVENTS();
             } catch (error) {
-                console.error('Error al guardar el evento:', error);
+                console.error('Error al guardar o actualizar el evento:', error);
             }
         },
         async deleteEvent(eventId) {
@@ -148,10 +163,3 @@ export default {
     },
 };
 </script>
-
-<style>
-/* .container {
-    max-width: 1000px;
-    margin: auto;
-} */
-</style>

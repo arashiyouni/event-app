@@ -73,17 +73,9 @@ const store = createStore({
       }
     },
     async CREATE_EVENT({ commit }, payload) {
-      const event = {
-        name: payload.name,
-        description: payload.description,
-        date_event: payload.date_event,
-        location: payload.location,
-        organizer: payload.organizer,
-        category_id: payload.category_id,
-      };
-
+      console.log('Payload a guardar evento: ', payload)
       try {
-        const response = await axios.get("/events", event);
+        const response = await axios.post("/events/", payload);
         console.log("💥 | Eventos Guardados: ", response.data);
         commit("CREATE_EVENT", response.data);
       } catch (err) {
@@ -91,10 +83,9 @@ const store = createStore({
         commit("SET_ERROR", err?.response?.data?.detail || "Error desconocido");
       }
     },
-    //TODO: MEJORAR EL PARAM QUE SE RECIBE EN EL DELETE, CREATE Y UPDATE
     async DELETE_EVENT({ commit }, payload) {
       try {
-        const response = await axios.delete(`/events/${payload}`);
+        const response = await axios.delete(`/events/remove-event/${payload}`);
         console.log("💥 | Eventos Eliminados: ", response.data);
         commit("DELETE_EVENT", response.data);
       } catch (err) {
@@ -102,17 +93,18 @@ const store = createStore({
         commit("SET_ERROR", err?.response?.data?.detail || "Error desconocido");
       }
     },
-    async UPDATE_EVENT({ commit }, payload) {
+    async UPDATE_EVENT({ commit }, event) {
+      console.log('Payload a editar evento: ', event)
       try {
-        const response = await this.axios(`/events/edit/${payload}`);
+        const {event_id, ...data} = event
+        const response = await axios.put(`/events/edit/${event_id}`, data);
         console.log("💥 | Eventos actualizado: ", response.data);
         commit("", response.data);
       } catch (err) {
-        console.error("❌ | Error al eliminar evento:", err);
+        console.error("❌ | Error al actualizar el evento:", err);
         commit("SET_ERROR", err?.response?.data?.detail || "Error desconocido");
       }
     },
-    //!TODO: AQUI VA EL ENDPOINT DE Enviar Correo
     async REGISTER_EVENT({ commit }, payload) {
       try {
         const response = await axios.post("/events/send-email", payload);
