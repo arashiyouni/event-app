@@ -55,11 +55,11 @@ const store = createStore({
     async GET_EVENT({ commit }, id) {
       try {
         const response = await axios.get(`/events/${id}`);
-        console.log('🌲 | Un evento recibido: ', response.data);
-        commit('GET_EVENT', response.data);
+        console.log("🌲 | Un evento recibido: ", response.data);
+        commit("GET_EVENT", response.data);
       } catch (err) {
-        console.error('❌ | Error al obtener eventos:', err);
-        commit('SET_ERROR', err?.response?.data?.detail || 'Error desconocido');
+        console.error("❌ | Error al obtener eventos:", err);
+        commit("SET_ERROR", err?.response?.data?.detail || "Error desconocido");
       }
     },
     async GET_GATEGORIES({ commit }) {
@@ -91,9 +91,10 @@ const store = createStore({
         commit("SET_ERROR", err?.response?.data?.detail || "Error desconocido");
       }
     },
-    async DELETE_EVENT({ commit }, eventId) {
+    //TODO: MEJORAR EL PARAM QUE SE RECIBE EN EL DELETE, CREATE Y UPDATE
+    async DELETE_EVENT({ commit }, payload) {
       try {
-        const response = await axios.delete(`/events/${eventId}`);
+        const response = await axios.delete(`/events/${payload}`);
         console.log("💥 | Eventos Eliminados: ", response.data);
         commit("DELETE_EVENT", response.data);
       } catch (err) {
@@ -114,15 +115,18 @@ const store = createStore({
     //!TODO: AQUI VA EL ENDPOINT DE Enviar Correo
     async REGISTER_EVENT({ commit }, payload) {
       try {
-        const response = await axios.post('/events/send-email', payload);
-        console.log('✅ | Evento registrado:', response.data);
-        commit('REGISTER_EVENT', response.data);
+        const response = await axios.post("/events/send-email", payload);
+        console.log("✅ | Evento registrado:", response.data);
+        commit("REGISTER_EVENT", response.data);
       } catch (err) {
-        console.log('URL generada:', `/events/add-event?event_id=${event_id}&user_email=${user_email}`);
-        console.error('❌ | Error al registrar evento:',  err);
-        commit('SET_ERROR', err?.response?.data?.detail || 'Error desconocido');
+        console.log(
+          "URL generada:",
+          `/events/add-event?event_id=${event_id}&user_email=${user_email}`
+        );
+        console.error("❌ | Error al registrar evento:", err);
+        commit("SET_ERROR", err?.response?.data?.detail || "Error desconocido");
       }
-    }
+    },
   },
 });
 
