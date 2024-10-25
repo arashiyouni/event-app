@@ -1,5 +1,5 @@
 <template>
-    <div class="m-auto mx-auto p-6">
+    <div class="m-auto mx-auto p-6 flex flex-col items-center justify-center">
         <h1 class="text-2xl font-bold mb-6 text-white">Lista de Eventos</h1>
 
         <button @click="openModal(null)" class="mb-4 px-4 py-2 bg-blue-700 text-white rounded-lg hover:bg-blue-800">
@@ -141,7 +141,7 @@ export default {
                     await this.UPDATE_EVENT({ event_id: this.currentEvent.event_id, ...eventData });
                 } else {
                     // Crear evento si no tiene event_id
-                    await this.CREATE_EVENT({...eventData});
+                    await this.CREATE_EVENT({ ...eventData });
                 }
                 this.closeModal();
                 this.GET_ALL_EVENTS();
