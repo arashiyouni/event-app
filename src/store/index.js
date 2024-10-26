@@ -73,7 +73,7 @@ const store = createStore({
       }
     },
     async CREATE_EVENT({ commit }, payload) {
-      console.log('Payload a guardar evento: ', payload)
+      console.log("Payload a guardar evento: ", payload);
       try {
         const response = await axios.post("/events/", payload);
         console.log("💥 | Eventos Guardados: ", response.data);
@@ -94,9 +94,9 @@ const store = createStore({
       }
     },
     async UPDATE_EVENT({ commit }, event) {
-      console.log('Payload a editar evento: ', event)
+      console.log("Payload a editar evento: ", event);
       try {
-        const {event_id, ...data} = event
+        const { event_id, ...data } = event;
         const response = await axios.put(`/events/edit/${event_id}`, data);
         console.log("💥 | Eventos actualizado: ", response.data);
         commit("", response.data);

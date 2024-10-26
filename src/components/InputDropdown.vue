@@ -15,7 +15,8 @@
             <div v-if="dropdownActive"
                 class="absolute z-10 mt-1 w-full bg-white divide-y divide-gray-100 rounded-lg shadow d">
                 <ul class="py-2 text-sm text-gray-700 dark:text-black">
-                    <li v-for="category in categories" :key="category.category_event_id" @click="selectCategory(category)"
+                    <li v-for="category in categories" :key="category.category_event_id"
+                        @click="selectCategory(category)"
                         class="px-4 py-2 hover:bg-blue-100 dark:hover:text-black cursor-pointer">
                         {{ category.name }}
                     </li>
@@ -37,14 +38,14 @@ export default {
     },
     computed: {
         ...mapState({
-            categories: (state) => state.categories, // Obtener categorías del store
+            categories: (state) => state.categories,
         }),
         selectedCategoryName() {
             return this.selectedCategory ? this.selectedCategory.name : '';
         },
     },
     methods: {
-        ...mapActions(['GET_GATEGORIES']), // Acción para obtener categorías
+        ...mapActions(['GET_GATEGORIES']),
         toggleDropdown() {
             this.dropdownActive = !this.dropdownActive;
         },

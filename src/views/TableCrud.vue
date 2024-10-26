@@ -99,7 +99,8 @@ export default {
                 { key: 'location', label: 'Ubicación' },
                 { key: 'organizer', label: 'Organizador/a' }
             ],
-            bodyUpdate: {}
+            page: 1, // Página actual
+            limit: 6, // Eventos por página
         };
     },
     computed: {
